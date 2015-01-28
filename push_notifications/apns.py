@@ -10,7 +10,7 @@ import struct
 import socket
 import time
 from contextlib import closing
-from binascii import unhexlify
+from base64 import b64decode
 from django.core.exceptions import ImproperlyConfigured
 from . import NotificationError
 from .settings import PUSH_NOTIFICATIONS_SETTINGS as SETTINGS
@@ -60,7 +60,7 @@ def _apns_create_socket_to_feedback():
 
 
 def _apns_pack_frame(token_hex, payload, identifier, expiration, priority):
-	token = unhexlify(token_hex)
+	token = b64decode(token_hex)
 	# |COMMAND|FRAME-LEN|{token}|{payload}|{id:4}|{expiration:4}|{priority:1}
 	frame_len = 3 * 5 + len(token) + len(payload) + 4 + 4 + 1  # 5 items, each 3 bytes prefix, then each item length
 	frame_fmt = "!BIBH%ssBH%ssBHIBHIBHB" % (len(token), len(payload))
